@@ -1,0 +1,15 @@
+{
+	"name": "vanilla-poke",
+	"version": "1.0.0",
+	"description": "Recreation of a pokedex with pure JS (TS)",
+	"main": "index.js",
+	"scripts": {
+		"build": "parcel build index.html",
+		"start": "parcel serve index.html"
+	},
+	"author": "@bercivarga",
+	"license": "ISC",
+	"dependencies": {
+		"parcel": "^2.0.0-beta.2"
+	}
+}
