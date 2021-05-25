@@ -21,7 +21,7 @@ export async function fetchPokemon(url: string): Promise<void> {
 				})
 			);
 		});
-		Promise.all(fetchAllArr)
+		await Promise.all(fetchAllArr)
 			.then(function assignData(data) {
 				const allPokemon = data.map((e) => {
 					return {
@@ -29,7 +29,7 @@ export async function fetchPokemon(url: string): Promise<void> {
 						sprite: e.sprites['front_default'],
 						type: e.types
 							.map(function combineTypes(t: any) {
-								t.type.name;
+								return t.type.name;
 							})
 							.join(', '),
 						id: e.id

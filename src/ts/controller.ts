@@ -5,10 +5,8 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 
 async function init() {
-	model.fetchPokemon('https://pokeapi.co/api/v2/pokemon/');
-	model.state.allResults.forEach((e) => {
-		console.log(e);
-	});
+	await model.fetchPokemon('https://pokeapi.co/api/v2/pokemon/');
+	view.render(model.state.allResults);
 }
 
 init();

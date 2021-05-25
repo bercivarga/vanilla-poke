@@ -442,18 +442,19 @@ id) /*: string*/
 }
 
 },{}],"3pGCN":[function(require,module,exports) {
+var _viewsView = require('./views/view');
+var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
+var _viewsViewDefault = _parcelHelpers.interopDefault(_viewsView);
 var _model = require('./model');
 require('core-js/stable');
 require('regenerator-runtime/runtime');
 async function init() {
-  _model.fetchPokemon('https://pokeapi.co/api/v2/pokemon/');
-  _model.state.allResults.forEach(e => {
-    console.log(e);
-  });
+  await _model.fetchPokemon('https://pokeapi.co/api/v2/pokemon/');
+  _viewsViewDefault.default.render(_model.state.allResults);
 }
 init();
 
-},{"core-js/stable":"1PFvP","regenerator-runtime/runtime":"62Qib","./model":"16SgY"}],"1PFvP":[function(require,module,exports) {
+},{"core-js/stable":"1PFvP","regenerator-runtime/runtime":"62Qib","./model":"16SgY","./views/view":"7jTip","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"1PFvP":[function(require,module,exports) {
 require('../modules/es.symbol');
 require('../modules/es.symbol.description');
 require('../modules/es.symbol.async-iterator');
@@ -12415,13 +12416,13 @@ async function fetchPokemon(url) {
         return res.json();
       }));
     });
-    Promise.all(fetchAllArr).then(function assignData(data) {
+    await Promise.all(fetchAllArr).then(function assignData(data) {
       const allPokemon = data.map(e => {
         return {
           name: e.name,
           sprite: e.sprites['front_default'],
           type: e.types.map(function combineTypes(t) {
-            t.type.name;
+            return t.type.name;
           }).join(', '),
           id: e.id
         };
@@ -12478,6 +12479,41 @@ exports.export = function (dest, destName, get) {
     get: get
   });
 };
-},{}]},["2fgOX","3pGCN"], "3pGCN", "parcelRequiref946")
+},{}],"7jTip":[function(require,module,exports) {
+var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
+_parcelHelpers.defineInteropFlag(exports);
+class View {
+  parentElement = document.getElementById('app');
+  data = {};
+  clear() {
+    this.parentElement.innerHTML = '';
+  }
+  renderError(message) {
+    const markup = `
+    <div>
+      <h2>Error</h2>
+      <p>${message}</p>
+    </div>
+    `;
+    this.parentElement.insertAdjacentHTML('afterbegin', markup);
+  }
+  render(pokemon) {
+    this.clear();
+    const pokeList = pokemon.map(function pokeElRender(p) {
+      const markup = `
+				<div>
+					<img src=${p.sprite} alt=${p.name} />
+					<p>${p.id}: ${p.name[0].toUpperCase() + p.name.slice(1)}</p>
+					<p>Type: ${p.type}<p>
+				</div>
+			`;
+      return markup;
+    }).join('');
+    this.parentElement.insertAdjacentHTML('afterbegin', pokeList);
+  }
+}
+exports.default = new View();
+
+},{"@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}]},["2fgOX","3pGCN"], "3pGCN", "parcelRequiref946")
 
 //# sourceMappingURL=index.912b0537.js.map
