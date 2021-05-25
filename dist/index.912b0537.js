@@ -12422,6 +12422,7 @@ async function fetchPokemon(url) {
           name: e.name,
           sprite: e.sprites['front_default'],
           type: e.types.map(function combineTypes(t) {
+            console.log(t);
             return t.type.name;
           }).join(', '),
           id: e.id

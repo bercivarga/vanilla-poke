@@ -1,5 +1,13 @@
 import { InitialResultInterface, PokemonInterface } from './interfaces';
 
+type PokeType = {
+	type: {
+		name: string;
+		url: string;
+	};
+	slot: number;
+};
+
 export const state: { prevPage: string; nextPage: string; allResults: PokemonInterface[] } = {
 	prevPage: '',
 	nextPage: '',
@@ -13,7 +21,7 @@ export async function fetchPokemon(url: string): Promise<void> {
 		state.prevPage = data.previous;
 		state.nextPage = data.next;
 
-		const fetchAllArr: any[] = []; // fix
+		const fetchAllArr: Promise<any>[] = []; // fix
 		data.results.forEach(function addResult(e: InitialResultInterface) {
 			fetchAllArr.push(
 				fetch(e.url).then(function resolve(res) {
@@ -28,7 +36,8 @@ export async function fetchPokemon(url: string): Promise<void> {
 						name: e.name,
 						sprite: e.sprites['front_default'],
 						type: e.types
-							.map(function combineTypes(t: any) {
+							.map(function combineTypes(t: PokeType) {
+								console.log(t);
 								return t.type.name;
 							})
 							.join(', '),
