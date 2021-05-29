@@ -448,9 +448,19 @@ var _viewsViewDefault = _parcelHelpers.interopDefault(_viewsView);
 var _model = require('./model');
 require('core-js/stable');
 require('regenerator-runtime/runtime');
+async function controlGoToPrevPage() {
+  await _model.fetchPokemon(_model.state.prevPage);
+  _viewsViewDefault.default.render(_model.state.allResults);
+}
+async function controlGoToNextPage() {
+  await _model.fetchPokemon(_model.state.nextPage);
+  _viewsViewDefault.default.render(_model.state.allResults);
+}
 async function init() {
   await _model.fetchPokemon('https://pokeapi.co/api/v2/pokemon/');
   _viewsViewDefault.default.render(_model.state.allResults);
+  _viewsViewDefault.default.addHandlerGoToPrevPage(controlGoToPrevPage);
+  _viewsViewDefault.default.addHandlerGoToNextPage(controlGoToNextPage);
 }
 init();
 
@@ -12484,7 +12494,9 @@ exports.export = function (dest, destName, get) {
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
 _parcelHelpers.defineInteropFlag(exports);
 class View {
-  parentElement = document.getElementById('app');
+  parentElement = document.getElementById('pokeList');
+  prevBtn = document.getElementById('prevBtn');
+  nextBtn = document.getElementById('nextBtn');
   data = {};
   clear() {
     this.parentElement.innerHTML = '';
@@ -12511,6 +12523,12 @@ class View {
       return markup;
     }).join('');
     this.parentElement.insertAdjacentHTML('afterbegin', pokeList);
+  }
+  addHandlerGoToPrevPage(handler) {
+    this.prevBtn.addEventListener('click', handler);
+  }
+  addHandlerGoToNextPage(handler) {
+    this.nextBtn.addEventListener('click', handler);
   }
 }
 exports.default = new View();

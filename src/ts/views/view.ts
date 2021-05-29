@@ -1,7 +1,9 @@
 import { PokemonInterface } from '../interfaces';
 
 class View {
-	parentElement = document.getElementById('app') as HTMLDivElement;
+	parentElement = document.getElementById('pokeList') as HTMLDivElement;
+	prevBtn = document.getElementById('prevBtn') as HTMLButtonElement;
+	nextBtn = document.getElementById('nextBtn') as HTMLButtonElement;
 	data = {};
 
 	clear(): void {
@@ -36,6 +38,14 @@ class View {
 			.join('');
 
 		this.parentElement.insertAdjacentHTML('afterbegin', pokeList);
+	}
+
+	addHandlerGoToPrevPage(handler: () => void): void {
+		this.prevBtn.addEventListener('click', handler);
+	}
+
+	addHandlerGoToNextPage(handler: () => void): void {
+		this.nextBtn.addEventListener('click', handler);
 	}
 }
 
