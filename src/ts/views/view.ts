@@ -10,6 +10,14 @@ class View {
 		this.parentElement.innerHTML = '';
 	}
 
+	setLoadingOn(): void {
+		this.parentElement.innerHTML = '<div class="lds-hourglass"></div>';
+	}
+
+	setLoadingOff(): void {
+		this.clear();
+	}
+
 	renderError(message: string | undefined) {
 		const markup = `
     <div>
@@ -22,22 +30,24 @@ class View {
 	}
 
 	render(pokemon: PokemonInterface[]) {
+		this.setLoadingOff();
 		this.clear();
 
-		const pokeList: string = pokemon
-			.map(function pokeElRender(p: PokemonInterface) {
-				const markup = `
-				<div>
+		const fragment = document.createDocumentFragment();
+
+		pokemon.forEach(function pokeElRender(p: PokemonInterface) {
+			const element = document.createElement('div');
+			const markup = `
 					<img src=${p.sprite} alt=${p.name} />
 					<p>${p.id}: ${p.name[0].toUpperCase() + p.name.slice(1)}</p>
 					<p>Type: ${p.type}<p>
-				</div>
 			`;
-				return markup;
-			})
-			.join('');
+			element.innerHTML = markup;
+			fragment.appendChild(element);
+		});
 
-		this.parentElement.insertAdjacentHTML('afterbegin', pokeList);
+		this.setLoadingOff();
+		this.parentElement.appendChild(fragment);
 	}
 
 	addHandlerGoToPrevPage(handler: () => void): void {

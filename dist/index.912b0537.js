@@ -449,14 +449,21 @@ var _model = require('./model');
 require('core-js/stable');
 require('regenerator-runtime/runtime');
 async function controlGoToPrevPage() {
+  if (!_model.state.prevPage) return;
+  _viewsViewDefault.default.clear();
+  _viewsViewDefault.default.setLoadingOn();
   await _model.fetchPokemon(_model.state.prevPage);
   _viewsViewDefault.default.render(_model.state.allResults);
 }
 async function controlGoToNextPage() {
+  if (!_model.state.nextPage) return;
+  _viewsViewDefault.default.clear();
+  _viewsViewDefault.default.setLoadingOn();
   await _model.fetchPokemon(_model.state.nextPage);
   _viewsViewDefault.default.render(_model.state.allResults);
 }
 async function init() {
+  _viewsViewDefault.default.setLoadingOn();
   await _model.fetchPokemon('https://pokeapi.co/api/v2/pokemon/');
   _viewsViewDefault.default.render(_model.state.allResults);
   _viewsViewDefault.default.addHandlerGoToPrevPage(controlGoToPrevPage);
@@ -12501,6 +12508,12 @@ class View {
   clear() {
     this.parentElement.innerHTML = '';
   }
+  setLoadingOn() {
+    this.parentElement.innerHTML = '<div class="lds-hourglass"></div>';
+  }
+  setLoadingOff() {
+    this.clear();
+  }
   renderError(message) {
     const markup = `
     <div>
@@ -12511,18 +12524,21 @@ class View {
     this.parentElement.insertAdjacentHTML('afterbegin', markup);
   }
   render(pokemon) {
+    this.setLoadingOff();
     this.clear();
-    const pokeList = pokemon.map(function pokeElRender(p) {
+    const fragment = document.createDocumentFragment();
+    pokemon.forEach(function pokeElRender(p) {
+      const element = document.createElement('div');
       const markup = `
-				<div>
 					<img src=${p.sprite} alt=${p.name} />
 					<p>${p.id}: ${p.name[0].toUpperCase() + p.name.slice(1)}</p>
 					<p>Type: ${p.type}<p>
-				</div>
 			`;
-      return markup;
-    }).join('');
-    this.parentElement.insertAdjacentHTML('afterbegin', pokeList);
+      element.innerHTML = markup;
+      fragment.appendChild(element);
+    });
+    this.setLoadingOff();
+    this.parentElement.appendChild(fragment);
   }
   addHandlerGoToPrevPage(handler) {
     this.prevBtn.addEventListener('click', handler);
