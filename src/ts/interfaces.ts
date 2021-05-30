@@ -15,3 +15,17 @@ export interface PokemonInterface {
 	sprite: string;
 	type: string;
 }
+
+export type PokemonType = {
+	sprites: {
+		front_default: string;
+	};
+	name: string;
+	types: [
+		{
+			type: {
+				name: string;
+			};
+		}
+	];
+};

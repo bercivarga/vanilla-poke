@@ -1,4 +1,4 @@
-import { InitialResultInterface, PokemonInterface } from './interfaces';
+import { InitialResultInterface, PokemonInterface, PokemonType } from './interfaces';
 
 type PokeType = {
 	type: {
@@ -8,10 +8,16 @@ type PokeType = {
 	slot: number;
 };
 
-export const state: { prevPage: string; nextPage: string; allResults: PokemonInterface[] } = {
+export const state: {
+	prevPage: string;
+	nextPage: string;
+	allResults: PokemonInterface[];
+	searchedPokemon: PokemonType;
+} = {
 	prevPage: '',
 	nextPage: '',
-	allResults: [ { id: 0, name: '', sprite: '', type: '' } ]
+	allResults: [ { id: 0, name: '', sprite: '', type: '' } ],
+	searchedPokemon: { name: '', sprites: { front_default: '' }, types: [ { type: { name: '' } } ] }
 };
 
 export async function fetchPokemon(url: string): Promise<void> {
@@ -37,7 +43,6 @@ export async function fetchPokemon(url: string): Promise<void> {
 						sprite: e.sprites['front_default'],
 						type: e.types
 							.map(function combineTypes(t: PokeType) {
-								console.log(t);
 								return t.type.name;
 							})
 							.join(', '),
@@ -50,8 +55,17 @@ export async function fetchPokemon(url: string): Promise<void> {
 				state.allResults = allPokemon;
 			});
 	} catch (err) {
-		console.log(err);
+		console.error(err);
 	}
 }
 
-fetchPokemon('https://pokeapi.co/api/v2/pokemon/');
+export async function searchPokemon(pokemon: string): Promise<void> {
+	try {
+		const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`);
+		if (!res.ok) return;
+		const data = await res.json();
+		state.searchedPokemon = data;
+	} catch (err) {
+		console.error(err);
+	}
+}

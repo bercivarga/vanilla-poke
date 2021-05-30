@@ -442,36 +442,50 @@ id) /*: string*/
 }
 
 },{}],"3pGCN":[function(require,module,exports) {
-var _viewsView = require('./views/view');
+var _viewsListView = require('./views/listView');
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
-var _viewsViewDefault = _parcelHelpers.interopDefault(_viewsView);
+var _viewsListViewDefault = _parcelHelpers.interopDefault(_viewsListView);
+var _viewsSearchView = require('./views/searchView');
+var _viewsSearchViewDefault = _parcelHelpers.interopDefault(_viewsSearchView);
 var _model = require('./model');
 require('core-js/stable');
 require('regenerator-runtime/runtime');
 async function controlGoToPrevPage() {
   if (!_model.state.prevPage) return;
-  _viewsViewDefault.default.clear();
-  _viewsViewDefault.default.setLoadingOn();
+  _viewsListViewDefault.default.clear();
+  _viewsListViewDefault.default.setLoadingOn();
   await _model.fetchPokemon(_model.state.prevPage);
-  _viewsViewDefault.default.render(_model.state.allResults);
+  _viewsListViewDefault.default.render(_model.state.allResults);
 }
 async function controlGoToNextPage() {
   if (!_model.state.nextPage) return;
-  _viewsViewDefault.default.clear();
-  _viewsViewDefault.default.setLoadingOn();
+  _viewsListViewDefault.default.clear();
+  _viewsListViewDefault.default.setLoadingOn();
   await _model.fetchPokemon(_model.state.nextPage);
-  _viewsViewDefault.default.render(_model.state.allResults);
+  _viewsListViewDefault.default.render(_model.state.allResults);
+}
+async function controlSearch() {
+  if (!_viewsSearchViewDefault.default.searchTerm) return;
+  _viewsSearchViewDefault.default.clear();
+  _viewsSearchViewDefault.default.setLoadingOn();
+  await _model.searchPokemon(_viewsSearchViewDefault.default.searchTerm);
+  _viewsSearchViewDefault.default.render(_model.state.searchedPokemon);
+}
+function controlInput(event) {
+  _viewsSearchViewDefault.default.searchTerm = event.target.value;
 }
 async function init() {
-  _viewsViewDefault.default.setLoadingOn();
+  _viewsListViewDefault.default.setLoadingOn();
   await _model.fetchPokemon('https://pokeapi.co/api/v2/pokemon/');
-  _viewsViewDefault.default.render(_model.state.allResults);
-  _viewsViewDefault.default.addHandlerGoToPrevPage(controlGoToPrevPage);
-  _viewsViewDefault.default.addHandlerGoToNextPage(controlGoToNextPage);
+  _viewsListViewDefault.default.render(_model.state.allResults);
+  _viewsListViewDefault.default.addHandlerGoToPrevPage(controlGoToPrevPage);
+  _viewsListViewDefault.default.addHandlerGoToNextPage(controlGoToNextPage);
+  _viewsSearchViewDefault.default.addHandlerSearch(controlSearch);
+  _viewsSearchViewDefault.default.addHandlerInputFieldBinding(controlInput);
 }
 init();
 
-},{"core-js/stable":"1PFvP","regenerator-runtime/runtime":"62Qib","./model":"16SgY","./views/view":"7jTip","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"1PFvP":[function(require,module,exports) {
+},{"core-js/stable":"1PFvP","regenerator-runtime/runtime":"62Qib","./model":"16SgY","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","./views/listView":"5HCzl","./views/searchView":"65PYW"}],"1PFvP":[function(require,module,exports) {
 require('../modules/es.symbol');
 require('../modules/es.symbol.description');
 require('../modules/es.symbol.async-iterator');
@@ -12410,6 +12424,9 @@ _parcelHelpers.export(exports, "state", function () {
 _parcelHelpers.export(exports, "fetchPokemon", function () {
   return fetchPokemon;
 });
+_parcelHelpers.export(exports, "searchPokemon", function () {
+  return searchPokemon;
+});
 const state = {
   prevPage: '',
   nextPage: '',
@@ -12418,7 +12435,18 @@ const state = {
     name: '',
     sprite: '',
     type: ''
-  }]
+  }],
+  searchedPokemon: {
+    name: '',
+    sprites: {
+      front_default: ''
+    },
+    types: [{
+      type: {
+        name: ''
+      }
+    }]
+  }
 };
 async function fetchPokemon(url) {
   try {
@@ -12439,7 +12467,6 @@ async function fetchPokemon(url) {
           name: e.name,
           sprite: e.sprites['front_default'],
           type: e.types.map(function combineTypes(t) {
-            console.log(t);
             return t.type.name;
           }).join(', '),
           id: e.id
@@ -12450,10 +12477,19 @@ async function fetchPokemon(url) {
       state.allResults = allPokemon;
     });
   } catch (err) {
-    console.log(err);
+    console.error(err);
   }
 }
-fetchPokemon('https://pokeapi.co/api/v2/pokemon/');
+async function searchPokemon(pokemon) {
+  try {
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`);
+    if (!res.ok) return;
+    const data = await res.json();
+    state.searchedPokemon = data;
+  } catch (err) {
+    console.error(err);
+  }
+}
 
 },{"@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"5gA8y":[function(require,module,exports) {
 "use strict";
@@ -12497,14 +12533,44 @@ exports.export = function (dest, destName, get) {
     get: get
   });
 };
-},{}],"7jTip":[function(require,module,exports) {
+},{}],"5HCzl":[function(require,module,exports) {
+var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
+_parcelHelpers.defineInteropFlag(exports);
+var _view = require('./view');
+var _viewDefault = _parcelHelpers.interopDefault(_view);
+class ListView extends _viewDefault.default {
+  prevBtn = document.getElementById('prevBtn');
+  nextBtn = document.getElementById('nextBtn');
+  render(pokemon) {
+    this.setLoadingOff();
+    this.clear();
+    const fragment = document.createDocumentFragment();
+    pokemon.forEach(function pokeElRender(p) {
+      const element = document.createElement('div');
+      const markup = `
+					<img src=${p.sprite} alt=${p.name} />
+					<p>${p.id}: ${p.name[0].toUpperCase() + p.name.slice(1)}</p>
+					<p>Type: ${p.type}<p>
+			`;
+      element.innerHTML = markup;
+      fragment.appendChild(element);
+    });
+    this.parentElement.appendChild(fragment);
+  }
+  addHandlerGoToPrevPage(handler) {
+    this.prevBtn.addEventListener('click', handler);
+  }
+  addHandlerGoToNextPage(handler) {
+    this.nextBtn.addEventListener('click', handler);
+  }
+}
+exports.default = new ListView();
+
+},{"./view":"7jTip","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"7jTip":[function(require,module,exports) {
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
 _parcelHelpers.defineInteropFlag(exports);
 class View {
   parentElement = document.getElementById('pokeList');
-  prevBtn = document.getElementById('prevBtn');
-  nextBtn = document.getElementById('nextBtn');
-  data = {};
   clear() {
     this.parentElement.innerHTML = '';
   }
@@ -12523,32 +12589,43 @@ class View {
     `;
     this.parentElement.insertAdjacentHTML('afterbegin', markup);
   }
+}
+exports.default = View;
+
+},{"@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"65PYW":[function(require,module,exports) {
+var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
+_parcelHelpers.defineInteropFlag(exports);
+var _view = require('./view');
+var _viewDefault = _parcelHelpers.interopDefault(_view);
+class SearchView extends _viewDefault.default {
+  searchBar = document.getElementById('searchBar');
+  searchTerm = '';
   render(pokemon) {
     this.setLoadingOff();
     this.clear();
-    const fragment = document.createDocumentFragment();
-    pokemon.forEach(function pokeElRender(p) {
-      const element = document.createElement('div');
-      const markup = `
-					<img src=${p.sprite} alt=${p.name} />
-					<p>${p.id}: ${p.name[0].toUpperCase() + p.name.slice(1)}</p>
-					<p>Type: ${p.type}<p>
+    const markup = `
+        <div>
+					<img src=${pokemon.sprites.front_default} alt=${pokemon.name} />
+					<p>${pokemon.name[0].toUpperCase() + pokemon.name.slice(1)}</p>
+					<p>Type: ${pokemon.types.map(function combineTypes(type) {
+      return type.type.name;
+    }).join(', ')}<p>
+        </div>
 			`;
-      element.innerHTML = markup;
-      fragment.appendChild(element);
+    this.parentElement.innerHTML = markup;
+  }
+  addHandlerSearch(handler) {
+    this.searchBar.addEventListener('submit', function sendSearch(event) {
+      event.preventDefault();
+      handler();
     });
-    this.setLoadingOff();
-    this.parentElement.appendChild(fragment);
   }
-  addHandlerGoToPrevPage(handler) {
-    this.prevBtn.addEventListener('click', handler);
-  }
-  addHandlerGoToNextPage(handler) {
-    this.nextBtn.addEventListener('click', handler);
+  addHandlerInputFieldBinding(handler) {
+    this.searchBar.addEventListener('change', handler);
   }
 }
-exports.default = new View();
+exports.default = new SearchView();
 
-},{"@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}]},["2fgOX","3pGCN"], "3pGCN", "parcelRequiref946")
+},{"./view":"7jTip","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}]},["2fgOX","3pGCN"], "3pGCN", "parcelRequiref946")
 
 //# sourceMappingURL=index.912b0537.js.map

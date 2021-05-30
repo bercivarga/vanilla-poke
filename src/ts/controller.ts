@@ -1,30 +1,45 @@
-import view from './views/view';
+import listView from './views/listView';
+import searchView from './views/searchView';
 import * as model from './model';
 
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 
-async function controlGoToPrevPage() {
+async function controlGoToPrevPage(): Promise<any> {
 	if (!model.state.prevPage) return;
-	view.clear();
-	view.setLoadingOn();
+	listView.clear();
+	listView.setLoadingOn();
 	await model.fetchPokemon(model.state.prevPage);
-	view.render(model.state.allResults);
+	listView.render(model.state.allResults);
 }
-async function controlGoToNextPage() {
+async function controlGoToNextPage(): Promise<any> {
 	if (!model.state.nextPage) return;
-	view.clear();
-	view.setLoadingOn();
+	listView.clear();
+	listView.setLoadingOn();
 	await model.fetchPokemon(model.state.nextPage);
-	view.render(model.state.allResults);
+	listView.render(model.state.allResults);
+}
+
+async function controlSearch(): Promise<any> {
+	if (!searchView.searchTerm) return;
+	searchView.clear();
+	searchView.setLoadingOn();
+	await model.searchPokemon(searchView.searchTerm);
+	searchView.render(model.state.searchedPokemon);
+}
+
+function controlInput(event: any): void {
+	searchView.searchTerm = event.target.value;
 }
 
 async function init() {
-	view.setLoadingOn();
+	listView.setLoadingOn();
 	await model.fetchPokemon('https://pokeapi.co/api/v2/pokemon/');
-	view.render(model.state.allResults);
-	view.addHandlerGoToPrevPage(controlGoToPrevPage);
-	view.addHandlerGoToNextPage(controlGoToNextPage);
+	listView.render(model.state.allResults);
+	listView.addHandlerGoToPrevPage(controlGoToPrevPage);
+	listView.addHandlerGoToNextPage(controlGoToNextPage);
+	searchView.addHandlerSearch(controlSearch);
+	searchView.addHandlerInputFieldBinding(controlInput);
 }
 
 init();
