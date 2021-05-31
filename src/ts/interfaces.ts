@@ -16,7 +16,7 @@ export interface PokemonInterface {
 	type: string;
 }
 
-export type PokemonType = {
+export type SearchedPokemonType = {
 	sprites: {
 		front_default: string;
 	};

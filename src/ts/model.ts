@@ -1,4 +1,4 @@
-import { InitialResultInterface, PokemonInterface, PokemonType } from './interfaces';
+import { InitialResultInterface, PokemonInterface, SearchedPokemonType } from './interfaces';
 
 type PokeType = {
 	type: {
@@ -12,7 +12,7 @@ export const state: {
 	prevPage: string;
 	nextPage: string;
 	allResults: PokemonInterface[];
-	searchedPokemon: PokemonType;
+	searchedPokemon: SearchedPokemonType;
 } = {
 	prevPage: '',
 	nextPage: '',

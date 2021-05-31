@@ -447,6 +447,8 @@ var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
 var _viewsListViewDefault = _parcelHelpers.interopDefault(_viewsListView);
 var _viewsSearchView = require('./views/searchView');
 var _viewsSearchViewDefault = _parcelHelpers.interopDefault(_viewsSearchView);
+var _viewsHomeLogoView = require('./views/homeLogoView');
+var _viewsHomeLogoViewDefault = _parcelHelpers.interopDefault(_viewsHomeLogoView);
 var _model = require('./model');
 require('core-js/stable');
 require('regenerator-runtime/runtime');
@@ -474,6 +476,11 @@ async function controlSearch() {
 function controlInput(event) {
   _viewsSearchViewDefault.default.searchTerm = event.target.value;
 }
+async function controlResetPage() {
+  _viewsListViewDefault.default.setLoadingOn();
+  await _model.fetchPokemon('https://pokeapi.co/api/v2/pokemon/');
+  _viewsListViewDefault.default.render(_model.state.allResults);
+}
 async function init() {
   _viewsListViewDefault.default.setLoadingOn();
   await _model.fetchPokemon('https://pokeapi.co/api/v2/pokemon/');
@@ -482,10 +489,11 @@ async function init() {
   _viewsListViewDefault.default.addHandlerGoToNextPage(controlGoToNextPage);
   _viewsSearchViewDefault.default.addHandlerSearch(controlSearch);
   _viewsSearchViewDefault.default.addHandlerInputFieldBinding(controlInput);
+  _viewsHomeLogoViewDefault.default.addHandlerReset(controlResetPage);
 }
 init();
 
-},{"core-js/stable":"1PFvP","regenerator-runtime/runtime":"62Qib","./model":"16SgY","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","./views/listView":"5HCzl","./views/searchView":"65PYW"}],"1PFvP":[function(require,module,exports) {
+},{"core-js/stable":"1PFvP","regenerator-runtime/runtime":"62Qib","./model":"16SgY","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","./views/listView":"5HCzl","./views/searchView":"65PYW","./views/homeLogoView":"h1GS4"}],"1PFvP":[function(require,module,exports) {
 require('../modules/es.symbol');
 require('../modules/es.symbol.description');
 require('../modules/es.symbol.async-iterator');
@@ -12626,6 +12634,17 @@ class SearchView extends _viewDefault.default {
 }
 exports.default = new SearchView();
 
-},{"./view":"7jTip","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}]},["2fgOX","3pGCN"], "3pGCN", "parcelRequiref946")
+},{"./view":"7jTip","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"h1GS4":[function(require,module,exports) {
+var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
+_parcelHelpers.defineInteropFlag(exports);
+class HomeLogoView {
+  logo = document.getElementById('homeLogo');
+  addHandlerReset(handler) {
+    this.logo.addEventListener('click', handler);
+  }
+}
+exports.default = new HomeLogoView();
+
+},{"@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}]},["2fgOX","3pGCN"], "3pGCN", "parcelRequiref946")
 
 //# sourceMappingURL=index.912b0537.js.map

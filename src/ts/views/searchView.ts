@@ -1,11 +1,11 @@
 import View from './view';
-import { PokemonType } from '../interfaces';
+import { SearchedPokemonType } from '../interfaces';
 
 class SearchView extends View {
 	searchBar = document.getElementById('searchBar') as HTMLFormElement;
 	searchTerm = '';
 
-	render(pokemon: PokemonType) {
+	render(pokemon: SearchedPokemonType) {
 		this.setLoadingOff();
 		this.clear();
 

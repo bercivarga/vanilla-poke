@@ -1,5 +1,6 @@
 import listView from './views/listView';
 import searchView from './views/searchView';
+import homeLogoView from './views/homeLogoView';
 import * as model from './model';
 
 import 'core-js/stable';
@@ -32,6 +33,12 @@ function controlInput(event: any): void {
 	searchView.searchTerm = event.target.value;
 }
 
+async function controlResetPage(): Promise<any> {
+	listView.setLoadingOn();
+	await model.fetchPokemon('https://pokeapi.co/api/v2/pokemon/');
+	listView.render(model.state.allResults);
+}
+
 async function init() {
 	listView.setLoadingOn();
 	await model.fetchPokemon('https://pokeapi.co/api/v2/pokemon/');
@@ -40,6 +47,7 @@ async function init() {
 	listView.addHandlerGoToNextPage(controlGoToNextPage);
 	searchView.addHandlerSearch(controlSearch);
 	searchView.addHandlerInputFieldBinding(controlInput);
+	homeLogoView.addHandlerReset(controlResetPage);
 }
 
 init();
