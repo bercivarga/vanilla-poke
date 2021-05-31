@@ -23,25 +23,37 @@ async function controlGoToNextPage(): Promise<any> {
 
 async function controlSearch(): Promise<any> {
 	if (!searchView.searchTerm) return;
+	controlHideButtons();
 	searchView.clear();
 	searchView.setLoadingOn();
 	await model.searchPokemon(searchView.searchTerm);
 	searchView.render(model.state.searchedPokemon);
 }
 
-function controlInput(event: any): void {
+async function controlResetPage(): Promise<any> {
+	listView.setLoadingOn();
+	await model.fetchPokemon(model.API_URL);
+	listView.render(model.state.allResults);
+	controlShowButtons();
+}
+
+function controlInput(event: { target: HTMLInputElement }): void {
 	searchView.searchTerm = event.target.value;
 }
 
-async function controlResetPage(): Promise<any> {
-	listView.setLoadingOn();
-	await model.fetchPokemon('https://pokeapi.co/api/v2/pokemon/');
-	listView.render(model.state.allResults);
+function controlHideButtons(): void {
+	listView.prevBtn.style.display = 'none';
+	listView.nextBtn.style.display = 'none';
+}
+
+function controlShowButtons(): void {
+	listView.prevBtn.style.display = 'inline-block';
+	listView.nextBtn.style.display = 'inline-block';
 }
 
 async function init() {
 	listView.setLoadingOn();
-	await model.fetchPokemon('https://pokeapi.co/api/v2/pokemon/');
+	await model.fetchPokemon(model.API_URL);
 	listView.render(model.state.allResults);
 	listView.addHandlerGoToPrevPage(controlGoToPrevPage);
 	listView.addHandlerGoToNextPage(controlGoToNextPage);

@@ -1,5 +1,7 @@
 import { InitialResultInterface, PokemonInterface, SearchedPokemonType } from './interfaces';
 
+export const API_URL: string = 'https://pokeapi.co/api/v2/pokemon/';
+
 type PokeType = {
 	type: {
 		name: string;
@@ -61,7 +63,7 @@ export async function fetchPokemon(url: string): Promise<void> {
 
 export async function searchPokemon(pokemon: string): Promise<void> {
 	try {
-		const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`);
+		const res = await fetch(`${API_URL}${pokemon}`);
 		if (!res.ok) return;
 		const data = await res.json();
 		state.searchedPokemon = data;

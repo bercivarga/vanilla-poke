@@ -468,22 +468,32 @@ async function controlGoToNextPage() {
 }
 async function controlSearch() {
   if (!_viewsSearchViewDefault.default.searchTerm) return;
+  controlHideButtons();
   _viewsSearchViewDefault.default.clear();
   _viewsSearchViewDefault.default.setLoadingOn();
   await _model.searchPokemon(_viewsSearchViewDefault.default.searchTerm);
   _viewsSearchViewDefault.default.render(_model.state.searchedPokemon);
 }
+async function controlResetPage() {
+  _viewsListViewDefault.default.setLoadingOn();
+  await _model.fetchPokemon(_model.API_URL);
+  _viewsListViewDefault.default.render(_model.state.allResults);
+  controlShowButtons();
+}
 function controlInput(event) {
   _viewsSearchViewDefault.default.searchTerm = event.target.value;
 }
-async function controlResetPage() {
-  _viewsListViewDefault.default.setLoadingOn();
-  await _model.fetchPokemon('https://pokeapi.co/api/v2/pokemon/');
-  _viewsListViewDefault.default.render(_model.state.allResults);
+function controlHideButtons() {
+  _viewsListViewDefault.default.prevBtn.style.display = 'none';
+  _viewsListViewDefault.default.nextBtn.style.display = 'none';
+}
+function controlShowButtons() {
+  _viewsListViewDefault.default.prevBtn.style.display = 'inline-block';
+  _viewsListViewDefault.default.nextBtn.style.display = 'inline-block';
 }
 async function init() {
   _viewsListViewDefault.default.setLoadingOn();
-  await _model.fetchPokemon('https://pokeapi.co/api/v2/pokemon/');
+  await _model.fetchPokemon(_model.API_URL);
   _viewsListViewDefault.default.render(_model.state.allResults);
   _viewsListViewDefault.default.addHandlerGoToPrevPage(controlGoToPrevPage);
   _viewsListViewDefault.default.addHandlerGoToNextPage(controlGoToNextPage);
@@ -12426,6 +12436,9 @@ try {
 },{}],"16SgY":[function(require,module,exports) {
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
 _parcelHelpers.defineInteropFlag(exports);
+_parcelHelpers.export(exports, "API_URL", function () {
+  return API_URL;
+});
 _parcelHelpers.export(exports, "state", function () {
   return state;
 });
@@ -12435,6 +12448,7 @@ _parcelHelpers.export(exports, "fetchPokemon", function () {
 _parcelHelpers.export(exports, "searchPokemon", function () {
   return searchPokemon;
 });
+const API_URL = 'https://pokeapi.co/api/v2/pokemon/';
 const state = {
   prevPage: '',
   nextPage: '',
@@ -12490,7 +12504,7 @@ async function fetchPokemon(url) {
 }
 async function searchPokemon(pokemon) {
   try {
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`);
+    const res = await fetch(`${API_URL}${pokemon}`);
     if (!res.ok) return;
     const data = await res.json();
     state.searchedPokemon = data;
