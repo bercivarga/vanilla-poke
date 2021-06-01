@@ -35,7 +35,7 @@ async function controlSearch(): Promise<any> {
 		controlHideButtons();
 		searchView.clear();
 		searchView.setLoadingOn();
-		await model.searchPokemon(searchView.searchTerm.toLowerCase());
+		await model.searchPokemon(searchView.searchTerm);
 		searchView.render(model.state.searchedPokemon);
 	} catch (err) {
 		listView.renderError(err);

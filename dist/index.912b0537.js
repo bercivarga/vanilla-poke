@@ -12527,7 +12527,7 @@ async function fetchPokemon(url) {
 }
 async function searchPokemon(pokemon) {
   try {
-    const res = await fetch(`${API_URL}${pokemon}`);
+    const res = await fetch(`${API_URL}${pokemon.toLowerCase()}`);
     if (!res.ok) throw new Error(`${res.status}`);
     const data = await res.json();
     state.searchedPokemon = data;

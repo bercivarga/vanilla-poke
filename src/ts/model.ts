@@ -64,7 +64,7 @@ export async function fetchPokemon(url: string): Promise<void> {
 
 export async function searchPokemon(pokemon: string): Promise<void> {
 	try {
-		const res = await fetch(`${API_URL}${pokemon}`);
+		const res = await fetch(`${API_URL}${pokemon.toLowerCase()}`);
 		if (!res.ok) throw new Error(`${res.status}`);
 		const data = await res.json();
 		state.searchedPokemon = data;
