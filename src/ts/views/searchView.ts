@@ -10,9 +10,9 @@ class SearchView extends View {
 		this.clear();
 
 		const markup = `
-        <div>
-					<img src=${pokemon.sprites.front_default} alt=${pokemon.name} />
-					<p>${pokemon.name[0].toUpperCase() + pokemon.name.slice(1)}</p>
+        <div class="flex flex-col justify-center items-center py-4 bg-gray-100 rounded-md">
+					<img src=${pokemon.sprites.front_default} alt=${pokemon.name} class="w-24 h-24" />
+					<p class="font-bold">${pokemon.name[0].toUpperCase() + pokemon.name.slice(1)}</p>
 					<p>Type: ${pokemon.types
 						.map(function combineTypes(type: { type: { name: string } }) {
 							return type.type.name;

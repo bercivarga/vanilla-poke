@@ -12570,11 +12570,12 @@ class ListView extends _viewDefault.default {
     pokemon.forEach(function pokeElRender(p) {
       const element = document.createElement('div');
       const markup = `
-					<img src=${p.sprite} alt=${p.name} />
-					<p>${p.id}: ${p.name[0].toUpperCase() + p.name.slice(1)}</p>
+					<img src=${p.sprite} alt=${p.name} class="w-24 h-24" />
+					<p class="font-bold">${p.id}: ${p.name[0].toUpperCase() + p.name.slice(1)}</p>
 					<p>Type: ${p.type}<p>
 			`;
       element.innerHTML = markup;
+      element.classList.add('flex', 'flex-col', 'justify-center', 'items-center', 'py-4', 'bg-gray-100', 'rounded-md');
       fragment.appendChild(element);
     });
     this.parentElement.appendChild(fragment);
@@ -12626,9 +12627,9 @@ class SearchView extends _viewDefault.default {
     this.setLoadingOff();
     this.clear();
     const markup = `
-        <div>
-					<img src=${pokemon.sprites.front_default} alt=${pokemon.name} />
-					<p>${pokemon.name[0].toUpperCase() + pokemon.name.slice(1)}</p>
+        <div class="flex flex-col justify-center items-center py-4 bg-gray-100 rounded-md">
+					<img src=${pokemon.sprites.front_default} alt=${pokemon.name} class="w-24 h-24" />
+					<p class="font-bold">${pokemon.name[0].toUpperCase() + pokemon.name.slice(1)}</p>
 					<p>Type: ${pokemon.types.map(function combineTypes(type) {
       return type.type.name;
     }).join(', ')}<p>

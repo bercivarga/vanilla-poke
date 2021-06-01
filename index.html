@@ -4,48 +4,54 @@
     <meta charset="utf-8" />
     <title>My Vanilla Pokedex App</title>
     <script defer src="src/ts/controller.ts"></script>
+    <link href="/tailwind.css" rel="stylesheet">
   </head>
   <body>
-    <button type="button" id='homeLogo'>HOME</button>
-    <form id='searchBar'>
-      <input  type="text"><button type="submit">Search</button>
-    </form>
-    <button type="button" id='prevBtn'>Previous</button>
-    <button type="button" id='nextBtn'>Next</button>
-    <div id="pokeList"></div>
+    <main class="py-4">
+      <div class="flex flex-col justify-center items-center w-64 mx-auto">
+        <form id='searchBar' class="mt-2 flex flex-row justify-between border-2 border-gray-100 w-full rounded-sm">
+          <input type="text" class="px-2 border-none outline-none"><button type="submit" class="px-2 py-1 bg-gray-100 hover:bg-gray-300">Search</button>
+        </form>
+        <div class="mt-2 flex flex-row w-full justify-between">
+          <button type="button" id='homeLogo' class='px-2 py-1 bg-gray-100 hover:bg-gray-300 rounded-sm'>Reset</button>
+          <button type="button" id='prevBtn' class='px-2 py-1 bg-gray-100 hover:bg-gray-300 rounded-sm'>Previous</button>
+          <button type="button" id='nextBtn' class='px-2 py-1 bg-gray-100 hover:bg-gray-300 rounded-sm'>Next</button>
+        </div>
+      </div>
+      <div id="pokeList" class="mt-4 grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 sm:gap-4 lg:gap-6 w-full h-full lg:w-9/12 lg:mx-auto"></div>
+    </main>
   </body>
   <style>
     .lds-hourglass {
-  display: block;
-  position: relative;
-  width: 80px;
-  height: 80px;
-}
-.lds-hourglass:after {
-  content: " ";
-  display: block;
-  border-radius: 50%;
-  width: 0;
-  height: 0;
-  margin: 8px;
-  box-sizing: border-box;
-  border: 32px solid #7092bd;
-  border-color: #7092bd transparent #7092bd transparent;
-  animation: lds-hourglass 1.2s infinite;
-}
-@keyframes lds-hourglass {
-  0% {
-    transform: rotate(0);
-    animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
-  }
-  50% {
-    transform: rotate(900deg);
-    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
-  }
-  100% {
-    transform: rotate(1800deg);
-  }
-}
-
+      display: block;
+      position: relative;
+      width: 80px;
+      height: 80px;
+    }
+    .lds-hourglass:after {
+      content: " ";
+      display: block;
+      border-radius: 50%;
+      width: 0;
+      height: 0;
+      margin: 8px;
+      box-sizing: border-box;
+      border: 32px solid #7092bd;
+      border-color: #7092bd transparent #7092bd transparent;
+      animation: lds-hourglass 1.2s infinite;
+    }
+    @keyframes lds-hourglass {
+      0% {
+        transform: rotate(0);
+        animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+      }
+      50% {
+        transform: rotate(900deg);
+        animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+      }
+      100% {
+        transform: rotate(1800deg);
+      }
+    }
   </style>
 </html>

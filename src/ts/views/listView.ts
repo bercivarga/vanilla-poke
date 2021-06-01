@@ -14,11 +14,12 @@ class ListView extends View {
 		pokemon.forEach(function pokeElRender(p: PokemonInterface) {
 			const element = document.createElement('div');
 			const markup = `
-					<img src=${p.sprite} alt=${p.name} />
-					<p>${p.id}: ${p.name[0].toUpperCase() + p.name.slice(1)}</p>
+					<img src=${p.sprite} alt=${p.name} class="w-24 h-24" />
+					<p class="font-bold">${p.id}: ${p.name[0].toUpperCase() + p.name.slice(1)}</p>
 					<p>Type: ${p.type}<p>
 			`;
 			element.innerHTML = markup;
+			element.classList.add('flex', 'flex-col', 'justify-center', 'items-center', 'py-4', 'bg-gray-100', 'rounded-md');
 			fragment.appendChild(element);
 		});
 
