@@ -25,6 +25,7 @@ export const state: {
 export async function fetchPokemon(url: string): Promise<void> {
 	try {
 		const res = await fetch(url);
+		if (!res.ok) throw new Error(`${res.status}`);
 		const data = await res.json();
 		state.prevPage = data.previous;
 		state.nextPage = data.next;
@@ -57,17 +58,17 @@ export async function fetchPokemon(url: string): Promise<void> {
 				state.allResults = allPokemon;
 			});
 	} catch (err) {
-		console.error(err);
+		throw err;
 	}
 }
 
 export async function searchPokemon(pokemon: string): Promise<void> {
 	try {
 		const res = await fetch(`${API_URL}${pokemon}`);
-		if (!res.ok) return;
+		if (!res.ok) throw new Error(`${res.status}`);
 		const data = await res.json();
 		state.searchedPokemon = data;
 	} catch (err) {
-		console.error(err);
+		throw err;
 	}
 }

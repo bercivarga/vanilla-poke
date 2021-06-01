@@ -13,11 +13,15 @@ export default class View {
 		this.clear();
 	}
 
-	renderError(message: string | undefined) {
+	renderError(message: string) {
+		this.setLoadingOff();
+
+		const msg = String(message);
+
 		const markup = `
     <div>
-      <h2>Error</h2>
-      <p>${message}</p>
+      <h2 class="font-bold text-xl">Error</h2>
+      <p>${msg === 'Error: 404' ? "Can't find what you were searching for." : 'Something went wrong. Try again.'}</p>
     </div>
     `;
 

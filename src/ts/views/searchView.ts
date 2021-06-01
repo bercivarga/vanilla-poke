@@ -3,6 +3,7 @@ import { SearchedPokemonType } from '../interfaces';
 
 class SearchView extends View {
 	searchBar = document.getElementById('searchBar') as HTMLFormElement;
+	inputField = document.getElementById('inputField') as HTMLInputElement;
 	searchTerm = '';
 
 	render(pokemon: SearchedPokemonType) {

@@ -453,32 +453,50 @@ var _model = require('./model');
 require('core-js/stable');
 require('regenerator-runtime/runtime');
 async function controlGoToPrevPage() {
-  if (!_model.state.prevPage) return;
-  _viewsListViewDefault.default.clear();
-  _viewsListViewDefault.default.setLoadingOn();
-  await _model.fetchPokemon(_model.state.prevPage);
-  _viewsListViewDefault.default.render(_model.state.allResults);
+  try {
+    if (!_model.state.prevPage) return;
+    _viewsListViewDefault.default.clear();
+    _viewsListViewDefault.default.setLoadingOn();
+    await _model.fetchPokemon(_model.state.prevPage);
+    _viewsListViewDefault.default.render(_model.state.allResults);
+  } catch (err) {
+    _viewsListViewDefault.default.renderError(err);
+  }
 }
 async function controlGoToNextPage() {
-  if (!_model.state.nextPage) return;
-  _viewsListViewDefault.default.clear();
-  _viewsListViewDefault.default.setLoadingOn();
-  await _model.fetchPokemon(_model.state.nextPage);
-  _viewsListViewDefault.default.render(_model.state.allResults);
+  try {
+    if (!_model.state.nextPage) return;
+    _viewsListViewDefault.default.clear();
+    _viewsListViewDefault.default.setLoadingOn();
+    await _model.fetchPokemon(_model.state.nextPage);
+    _viewsListViewDefault.default.render(_model.state.allResults);
+  } catch (err) {
+    _viewsListViewDefault.default.renderError(err);
+  }
 }
 async function controlSearch() {
-  if (!_viewsSearchViewDefault.default.searchTerm) return;
-  controlHideButtons();
-  _viewsSearchViewDefault.default.clear();
-  _viewsSearchViewDefault.default.setLoadingOn();
-  await _model.searchPokemon(_viewsSearchViewDefault.default.searchTerm);
-  _viewsSearchViewDefault.default.render(_model.state.searchedPokemon);
+  try {
+    if (!_viewsSearchViewDefault.default.searchTerm) return;
+    controlHideButtons();
+    _viewsSearchViewDefault.default.clear();
+    _viewsSearchViewDefault.default.setLoadingOn();
+    await _model.searchPokemon(_viewsSearchViewDefault.default.searchTerm);
+    _viewsSearchViewDefault.default.render(_model.state.searchedPokemon);
+  } catch (err) {
+    _viewsListViewDefault.default.renderError(err);
+  }
 }
 async function controlResetPage() {
-  _viewsListViewDefault.default.setLoadingOn();
-  await _model.fetchPokemon(_model.API_URL);
-  _viewsListViewDefault.default.render(_model.state.allResults);
-  controlShowButtons();
+  try {
+    _viewsListViewDefault.default.setLoadingOn();
+    await _model.fetchPokemon(_model.API_URL);
+    _viewsListViewDefault.default.render(_model.state.allResults);
+    controlShowButtons();
+    _viewsSearchViewDefault.default.searchTerm = '';
+    _viewsSearchViewDefault.default.inputField.value = '';
+  } catch (err) {
+    _viewsListViewDefault.default.renderError(err);
+  }
 }
 function controlInput(event) {
   _viewsSearchViewDefault.default.searchTerm = event.target.value;
@@ -492,14 +510,18 @@ function controlShowButtons() {
   _viewsListViewDefault.default.nextBtn.style.display = 'inline-block';
 }
 async function init() {
-  _viewsListViewDefault.default.setLoadingOn();
-  await _model.fetchPokemon(_model.API_URL);
-  _viewsListViewDefault.default.render(_model.state.allResults);
-  _viewsListViewDefault.default.addHandlerGoToPrevPage(controlGoToPrevPage);
-  _viewsListViewDefault.default.addHandlerGoToNextPage(controlGoToNextPage);
-  _viewsSearchViewDefault.default.addHandlerSearch(controlSearch);
-  _viewsSearchViewDefault.default.addHandlerInputFieldBinding(controlInput);
-  _viewsHomeLogoViewDefault.default.addHandlerReset(controlResetPage);
+  try {
+    _viewsListViewDefault.default.setLoadingOn();
+    await _model.fetchPokemon(_model.API_URL);
+    _viewsListViewDefault.default.render(_model.state.allResults);
+    _viewsListViewDefault.default.addHandlerGoToPrevPage(controlGoToPrevPage);
+    _viewsListViewDefault.default.addHandlerGoToNextPage(controlGoToNextPage);
+    _viewsSearchViewDefault.default.addHandlerSearch(controlSearch);
+    _viewsSearchViewDefault.default.addHandlerInputFieldBinding(controlInput);
+    _viewsHomeLogoViewDefault.default.addHandlerReset(controlResetPage);
+  } catch (err) {
+    _viewsListViewDefault.default.renderError(err);
+  }
 }
 init();
 
@@ -12473,6 +12495,7 @@ const state = {
 async function fetchPokemon(url) {
   try {
     const res = await fetch(url);
+    if (!res.ok) throw new Error(`${res.status}`);
     const data = await res.json();
     state.prevPage = data.previous;
     state.nextPage = data.next;
@@ -12499,17 +12522,17 @@ async function fetchPokemon(url) {
       state.allResults = allPokemon;
     });
   } catch (err) {
-    console.error(err);
+    throw err;
   }
 }
 async function searchPokemon(pokemon) {
   try {
     const res = await fetch(`${API_URL}${pokemon}`);
-    if (!res.ok) return;
+    if (!res.ok) throw new Error(`${res.status}`);
     const data = await res.json();
     state.searchedPokemon = data;
   } catch (err) {
-    console.error(err);
+    throw err;
   }
 }
 
@@ -12604,10 +12627,12 @@ class View {
     this.clear();
   }
   renderError(message) {
+    this.setLoadingOff();
+    const msg = String(message);
     const markup = `
     <div>
-      <h2>Error</h2>
-      <p>${message}</p>
+      <h2 class="font-bold text-xl">Error</h2>
+      <p>${msg === 'Error: 404' ? "Can't find what you were searching for." : 'Something went wrong. Try again.'}</p>
     </div>
     `;
     this.parentElement.insertAdjacentHTML('afterbegin', markup);
@@ -12622,6 +12647,7 @@ var _view = require('./view');
 var _viewDefault = _parcelHelpers.interopDefault(_view);
 class SearchView extends _viewDefault.default {
   searchBar = document.getElementById('searchBar');
+  inputField = document.getElementById('inputField');
   searchTerm = '';
   render(pokemon) {
     this.setLoadingOff();

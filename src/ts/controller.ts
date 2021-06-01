@@ -7,34 +7,52 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 
 async function controlGoToPrevPage(): Promise<any> {
-	if (!model.state.prevPage) return;
-	listView.clear();
-	listView.setLoadingOn();
-	await model.fetchPokemon(model.state.prevPage);
-	listView.render(model.state.allResults);
+	try {
+		if (!model.state.prevPage) return;
+		listView.clear();
+		listView.setLoadingOn();
+		await model.fetchPokemon(model.state.prevPage);
+		listView.render(model.state.allResults);
+	} catch (err) {
+		listView.renderError(err);
+	}
 }
 async function controlGoToNextPage(): Promise<any> {
-	if (!model.state.nextPage) return;
-	listView.clear();
-	listView.setLoadingOn();
-	await model.fetchPokemon(model.state.nextPage);
-	listView.render(model.state.allResults);
+	try {
+		if (!model.state.nextPage) return;
+		listView.clear();
+		listView.setLoadingOn();
+		await model.fetchPokemon(model.state.nextPage);
+		listView.render(model.state.allResults);
+	} catch (err) {
+		listView.renderError(err);
+	}
 }
 
 async function controlSearch(): Promise<any> {
-	if (!searchView.searchTerm) return;
-	controlHideButtons();
-	searchView.clear();
-	searchView.setLoadingOn();
-	await model.searchPokemon(searchView.searchTerm);
-	searchView.render(model.state.searchedPokemon);
+	try {
+		if (!searchView.searchTerm) return;
+		controlHideButtons();
+		searchView.clear();
+		searchView.setLoadingOn();
+		await model.searchPokemon(searchView.searchTerm);
+		searchView.render(model.state.searchedPokemon);
+	} catch (err) {
+		listView.renderError(err);
+	}
 }
 
 async function controlResetPage(): Promise<any> {
-	listView.setLoadingOn();
-	await model.fetchPokemon(model.API_URL);
-	listView.render(model.state.allResults);
-	controlShowButtons();
+	try {
+		listView.setLoadingOn();
+		await model.fetchPokemon(model.API_URL);
+		listView.render(model.state.allResults);
+		controlShowButtons();
+		searchView.searchTerm = '';
+		searchView.inputField.value = '';
+	} catch (err) {
+		listView.renderError(err);
+	}
 }
 
 function controlInput(event: { target: HTMLInputElement }): void {
@@ -52,14 +70,18 @@ function controlShowButtons(): void {
 }
 
 async function init() {
-	listView.setLoadingOn();
-	await model.fetchPokemon(model.API_URL);
-	listView.render(model.state.allResults);
-	listView.addHandlerGoToPrevPage(controlGoToPrevPage);
-	listView.addHandlerGoToNextPage(controlGoToNextPage);
-	searchView.addHandlerSearch(controlSearch);
-	searchView.addHandlerInputFieldBinding(controlInput);
-	homeLogoView.addHandlerReset(controlResetPage);
+	try {
+		listView.setLoadingOn();
+		await model.fetchPokemon(model.API_URL);
+		listView.render(model.state.allResults);
+		listView.addHandlerGoToPrevPage(controlGoToPrevPage);
+		listView.addHandlerGoToNextPage(controlGoToNextPage);
+		searchView.addHandlerSearch(controlSearch);
+		searchView.addHandlerInputFieldBinding(controlInput);
+		homeLogoView.addHandlerReset(controlResetPage);
+	} catch (err) {
+		listView.renderError(err);
+	}
 }
 
 init();
